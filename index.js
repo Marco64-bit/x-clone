@@ -12,7 +12,10 @@ document.addEventListener('click', function (e) {
         handleReplyClick(e.target.dataset.reply)
     } else if (e.target.id === 'tweet-btn') {
         handleTweetBtnClick()
-    } else if (e.target.dataset.replyTweet) {
+    }else if (e.target.dataset.trash) {
+        handleTrashClick(e.target.dataset.trash)
+    }
+    else if (e.target.dataset.replyTweet) {
         handleReplyInput(e.target.dataset.replyTweet)
     }
 })
@@ -49,6 +52,17 @@ function handleRetweetClick(tweetId) {
 
 function handleReplyClick(replyId) {
     document.getElementById(`replies-${replyId}`).classList.toggle('hidden')
+}
+
+function handleTrashClick(tweetId) {
+    const isDelete = confirm('Are you sure you want to delete this tweet?')
+    if (!isDelete) return
+    const targetTweetObj = newData.filter(function (tweet) {
+        return tweet.uuid === tweetId
+    })
+    newData.splice(newData.indexOf(targetTweetObj[0]), 1)
+    render()
+    saveData()
 }
 
 function handleReplyInput(replyId) {
@@ -110,6 +124,7 @@ function getFeedHtml() {
             retweetIconClass = 'retweeted'
         }
 
+
         let repliesHtml = ''
 
         if (tweet.replies.length > 0) {
@@ -121,6 +136,7 @@ function getFeedHtml() {
             <div>
                 <p class="handle">${reply.handle}</p>
                 <p class="tweet-text">${reply.tweetText}</p>
+                
             </div>
         </div>
 </div>
@@ -155,6 +171,14 @@ function getFeedHtml() {
                     ></i>
                     ${tweet.retweets}
                 </span>
+                ${tweet.handle === `@Scrimba` ?
+        `<span class="tweet-detail">
+                    <i class="fa-solid fa-trash"
+                       data-trash="${tweet.uuid}"
+                    ></i>
+                </span>`: ''
+                }
+                
             </div>   
         </div>            
     </div>
