@@ -1,6 +1,8 @@
 import {tweetsData} from './data.js'
 import {v4 as uuidv4} from 'https://jspm.dev/uuid';
 
+const newData = JSON.parse(localStorage.getItem('tweetsData')) || tweetsData
+
 document.addEventListener('click', function (e) {
     if (e.target.dataset.like) {
         handleLikeClick(e.target.dataset.like)
@@ -16,7 +18,7 @@ document.addEventListener('click', function (e) {
 })
 
 function handleLikeClick(tweetId) {
-    const targetTweetObj = tweetsData.filter(function (tweet) {
+    const targetTweetObj = newData.filter(function (tweet) {
         return tweet.uuid === tweetId
     })[0]
 
@@ -27,10 +29,11 @@ function handleLikeClick(tweetId) {
     }
     targetTweetObj.isLiked = !targetTweetObj.isLiked
     render()
+    saveData()
 }
 
 function handleRetweetClick(tweetId) {
-    const targetTweetObj = tweetsData.filter(function (tweet) {
+    const targetTweetObj = newData.filter(function (tweet) {
         return tweet.uuid === tweetId
     })[0]
 
@@ -41,6 +44,7 @@ function handleRetweetClick(tweetId) {
     }
     targetTweetObj.isRetweeted = !targetTweetObj.isRetweeted
     render()
+    saveData()
 }
 
 function handleReplyClick(replyId) {
@@ -51,7 +55,8 @@ function handleReplyInput(replyId) {
     const replyInput = document.getElementById(`reply-${replyId}`)
     // Check if the input is empty
     if (!replyInput.value) return
-    const targetTweetObj = tweetsData.filter(function (tweet) {
+
+    const targetTweetObj = newData.filter(function (tweet) {
         return tweet.uuid === replyId
     })[0]
     targetTweetObj.replies.unshift({
@@ -61,13 +66,14 @@ function handleReplyInput(replyId) {
     })
     render()
     document.getElementById(`replies-${replyId}`).classList.toggle('hidden')
+    saveData()
 }
 
 function handleTweetBtnClick() {
     const tweetInput = document.getElementById('tweet-input')
 
     if (tweetInput.value) {
-        tweetsData.unshift({
+        newData.unshift({
             handle: `@Scrimba`,
             profilePic: `images/scrimbalogo.png`,
             likes: 0,
@@ -80,14 +86,17 @@ function handleTweetBtnClick() {
         })
         render()
         tweetInput.value = ''
+        saveData()
     }
+}
 
+function saveData() {
+    localStorage.setItem('tweetsData', JSON.stringify(newData))
 }
 
 function getFeedHtml() {
     let feedHtml = ``
-
-    tweetsData.forEach(function (tweet) {
+    newData.forEach(function (tweet) {
 
         let likeIconClass = ''
 
