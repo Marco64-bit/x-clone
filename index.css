@@ -21,6 +21,10 @@ i{
     color: #999;
 }
 
+.fa-trash:hover,
+.fa-trash:focus{
+    color: #F44336;
+}
 .liked{
     color: red;
 }
